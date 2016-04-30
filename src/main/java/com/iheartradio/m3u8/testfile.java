@@ -18,7 +18,7 @@ public class testfile {
 
     MediaPlaylist mediaPlaylist = null;
     Playlist playlist = null;
-    static String urlPrefix="http://hls.24ur.com/POPTV/enc/";
+    static String urlPrefix="http://HOSTNAME/CHANNEL/enc/";
 
 
     public static void main(String[] args) {
@@ -51,7 +51,7 @@ public class testfile {
             Integer keyNum = seqnum+x;
             keyNum =(int) keyNum / 100;
             encryptionData = new EncryptionData.Builder()
-                    .withUri("http://hls.24ur.com/plist/POPTV/1/asd/"+keyNum+"/index.key")
+                    .withUri("http://HOSTNAME/plist/CHANNEL/1/session/"+keyNum+"/index.key")
                     .withMethod(EncryptionMethod.AES)
                     .withKeyFormat("identity")
                     .withKeyFormatVersions(l)

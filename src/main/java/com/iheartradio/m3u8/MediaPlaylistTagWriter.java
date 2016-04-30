@@ -214,6 +214,14 @@ abstract class MediaPlaylistTagWriter extends ExtTagWriter {
                 if (trackData.hasDiscontinuity()) {
                     tagWriter.writeTag(Constants.EXT_X_DISCONTINUITY_TAG);
                 }
+                //KEY DATA -- HACK/
+                if (trackData.hasEncryptionData()) {
+                    EncryptionData ed = trackData.getEncryptionData();
+                    String EXT_X_KEY="#EXT-X-KEY:KEYFORMATVERSIONS=\"1\",METHOD=AES-128,URI=\"##KEYURL##\",KEYFORMAT=\"identity\"";
+                    EXT_X_KEY = EXT_X_KEY.replace("##KEYURL##",ed.getUri());
+                    tagWriter.writeLine(EXT_X_KEY);
+                }
+
                 tagWriter.writeTag(getTag(), sb.toString());
                 tagWriter.writeLine(trackData.getUri());
             }
@@ -300,10 +308,14 @@ abstract class MediaPlaylistTagWriter extends ExtTagWriter {
         @Override
         public void doWrite(TagWriter tagWriter, Playlist playlist, MediaPlaylist mediaPlaylist) throws IOException, ParseException {
             if (mediaPlaylist.getTracks().size() > 0) {
-                TrackData td = mediaPlaylist.getTracks().get(0);
-                if (td.hasEncryptionData()) {
-                    EncryptionData ed = td.getEncryptionData();
-                    writeAttributes(tagWriter, ed, HANDLERS);
+                Integer trackCount=mediaPlaylist.getTracks().size();
+                for (int x=0;x<trackCount;x++) {
+                    TrackData td = mediaPlaylist.getTracks().get(x);
+                    if (td.hasEncryptionData()) {
+                        EncryptionData ed = td.getEncryptionData();
+                        //writeAttributes(tagWriter, ed, HANDLERS);
+                        //tagWriter.writeLine("KEY _ DATA");
+                    }
                 }
             }
         }

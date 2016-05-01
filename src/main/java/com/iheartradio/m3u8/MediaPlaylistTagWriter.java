@@ -201,6 +201,7 @@ abstract class MediaPlaylistTagWriter extends ExtTagWriter {
         
         @Override
         public void doWrite(TagWriter tagWriter, Playlist playlist, MediaPlaylist mediaPlaylist) throws IOException ,ParseException {
+            String currentKeyUrl="";
             for (TrackData trackData : mediaPlaylist.getTracks()) {
                 StringBuilder sb = new StringBuilder();
                 if (playlist.getCompatibilityVersion() <= 3) {
@@ -217,9 +218,12 @@ abstract class MediaPlaylistTagWriter extends ExtTagWriter {
                 //KEY DATA -- HACK/
                 if (trackData.hasEncryptionData()) {
                     EncryptionData ed = trackData.getEncryptionData();
-                    String EXT_X_KEY="#EXT-X-KEY:KEYFORMATVERSIONS=\"1\",METHOD=AES-128,URI=\"##KEYURL##\",KEYFORMAT=\"identity\"";
-                    EXT_X_KEY = EXT_X_KEY.replace("##KEYURL##",ed.getUri());
-                    tagWriter.writeLine(EXT_X_KEY);
+                    String EXT_X_KEY="#EXT-X-KEY:METHOD=AES-128,URI=\"##KEYURL##\"";
+                    if (!currentKeyUrl.equals(ed.getUri())) {
+                        EXT_X_KEY = EXT_X_KEY.replace("##KEYURL##", ed.getUri());
+                        tagWriter.writeLine(EXT_X_KEY);
+                        currentKeyUrl  = ed.getUri();
+                    }
                 }
 
                 tagWriter.writeTag(getTag(), sb.toString());
